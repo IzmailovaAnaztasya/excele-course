@@ -1,0 +1,24 @@
+{
+  "name": "excelcours",
+  "version": "1.0.0",
+  "description": "Pure JavaScript Excel Application",
+  "main": "webpack.config.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/IzmailovaAnaztasya/excele-course.git"
+  },
+  "keywords": [
+    "js",
+    "javascript",
+    "excel"
+  ],
+  "author": "IzmailovaAnaztasya <izmailova.anastasiy@yandex.ru>",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/IzmailovaAnaztasya/excele-course/issues"
+  },
+  "homepage": "https://github.com/IzmailovaAnaztasya/excele-course#readme"
+}
