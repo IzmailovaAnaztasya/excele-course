@@ -36,5 +36,29 @@ module.exports = {
         new MiniCssExtractPlugin({
             filename: 'bundle.[hash].css'// принимает в себя один параметр которому говорим в какой файл перемещать
         })
-    ]
+    ],
+    module: {
+        rules: [
+          {
+            test: /\.s[ac]ss$/i,
+            use: [
+                MiniCssExtractPlugin.loader, //наход в статическ переменной плагина мини cssextract-loader
+              // Translates CSS into CommonJS
+                "css-loader",
+              // Compiles Sass to CSS
+                "sass-loader",
+            ],
+          },
+          {
+            test: /\.m?js$/,
+            exclude: /node_modules/,
+            use: {
+              loader: "babel-loader",
+              options: {
+                presets: ['@babel/preset-env']
+              }
+            }
+          },
+        ],
+      },
 }
