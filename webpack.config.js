@@ -13,6 +13,21 @@ console.log('IS DEV', isDev);
 
 const filename = ext => isDev ? `bundle.${ext}` : `bundle.[hash].${ext}`;
 
+const jsLoaders = () => {
+  const loaders = [
+    {
+      loader: "babel-loader",
+      options: {
+        presets: ['@babel/preset-env']
+      }
+    }
+  ]
+  if (isDev) {
+    loaders.push('eslint-loader')
+  }
+  return loaders;
+}
+
 module.exports = {
     context: path.resolve(__dirname, 'src'), //через метод resolve соединяем системн перемен __dirname это путь до папки проекта и нужной строки, т.о WP смотрит за всеми исходниками в папке src
     mode: 'development',
@@ -69,12 +84,7 @@ module.exports = {
           {
             test: /\.m?js$/,
             exclude: /node_modules/,
-            use: {
-              loader: "babel-loader",
-              options: {
-                presets: ['@babel/preset-env']
-              }
-            }
+            use: jsLoaders()
           },
         ],
       },
