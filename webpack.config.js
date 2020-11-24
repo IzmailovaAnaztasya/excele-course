@@ -5,12 +5,20 @@ const CopyPlugin = require("copy-webpack-plugin");
 const { resolve } = require('path');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
+const isProd = process.env.NODE_ENV === 'production';
+const isDev = !isProd;
+
+console.log('IS PROD', isProd);
+console.log('IS DEV', isDev);
+
+const filename = ext => isDev ? `bundle.${ext}` : `bundle.[hash].${ext}`;
+
 module.exports = {
     context: path.resolve(__dirname, 'src'), //через метод resolve соединяем системн перемен __dirname это путь до папки проекта и нужной строки, т.о WP смотрит за всеми исходниками в папке src
     mode: 'development',
-    entry: './index.js',
+    entry: ['@babel/polyfill', './index.js'],
     output: {
-        filename: 'bundle.[hash].js',
+        filename: filename('js'),
         path: path.resolve(__dirname, 'dist')
     },
     resolve: {
@@ -20,10 +28,19 @@ module.exports = {
             '@core': path.resolve(__dirname, 'src/core')
         }
     },
+    devtool: isDev ? 'source-map' : false,
+    devServer: {
+      port: 3000,
+      hot: isDev
+    },
     plugins: [
         new CleanWebpackPlugin(),
         new HtmlWebpackPlugin({ //подключение плагина плюс настройка
-            template: 'index.html' //шаблон для html без укаания папки src
+            template: 'index.html', //шаблон для html без укаания папки src
+            minify: {
+                removeComments: isProd, //удаление комментариев
+                collapseWhitespace: isProd //удаление пробелов
+            }
         }),
         new CopyPlugin({ //для переноса фавикон
             patterns: [ // в конструктор передаем массив и два объекта
@@ -34,7 +51,7 @@ module.exports = {
             ],
           }),
         new MiniCssExtractPlugin({
-            filename: 'bundle.[hash].css'// принимает в себя один параметр которому говорим в какой файл перемещать
+            filename: filename('css')// принимает в себя один параметр которому говорим в какой файл перемещать
         })
     ],
     module: {
