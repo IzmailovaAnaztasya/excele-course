@@ -6,6 +6,7 @@
 @import "toolbar";
 @import "formula";
 @import "table";
+@import "dashboard";
 
 * {
   //так обозначаем что то для селектора всех элементов
@@ -21,4 +22,9 @@ body {
 
 .excel {
   position: relative;
+  color: #888;
+  height: 100%;
+  max-width: 100%; //чтобы не принимать больше чем есть ширина экрана
+  padding-bottom: 2px;
+  font-size: 0.8rem; //?? чтобы он был чуть меньше
 }
