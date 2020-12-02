@@ -9,7 +9,10 @@
         "require-jsdoc":"off",
         "indent":"off",
         "linebreak-style": 0,
-        "eol-last": 0
+        "eol-last": 0,
+        "spaced-comment":"off",
+        "object-curly-spacing":"off",
+        "max-len":"off"
     },
     "extends": ["eslint:recommended", "google"]
 }
