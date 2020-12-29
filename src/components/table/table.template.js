@@ -3,22 +3,33 @@ const CharCODES = {
     Z: 90,
 };
 
-function createCell() {
+function createCell(_, index) {
+    //console.log(index);
     return `
-        <div class="cell" contenteditable=""></div>
+        <div class="cell" contenteditable="" data-col="${index}">
+        <div class="cell-resize" data-resize="cell"></div>
+        </div>
     `
 };
 
-function createCol(col) {
+function createCol(col, index) {
+    //console.log(index);
     return `
-        <div class="column">${col}</div>
+        <div class="column" data-type="targetable" data-col="${index}">
+        ${col}
+        <div class="col-resize" data-resize="col"></div>
+        </div>
     `
 };
 
 function createRow(index, content) {
+    const resize = index ? '<div class="row-resize" data-resize="row"></div>' : ''
     return `
         <div class="row">
-            <div class="row-info">${index ? index : ''}</div>
+            <div class="row-info">
+            ${index ? index : ''}
+            ${resize}
+            </div>
             <div class="row-data">${content}</div>
         </div>
     `
@@ -29,17 +40,17 @@ export function createTable(rowsCount = 15) {
     const rows = []; //создаем наши строки
     //console.log(rows);
 
-    const cols = new Array(colsCount).fill('').map((el, index) => {
+    const cols = new Array(colsCount).fill('').map((el, index) => { //сщздание нового массива Array
         return String.fromCharCode(CharCODES.A + index)
     })
-        .map((el) => {
-            return createCol(el)
+        .map((el, index) => { //передает 3 параметра el index arrey
+            return createCol(el, index) //вот тут мы создаем колонку
         }).join(''); //разбиваем первую строку на Колонки
 
     //console.log(cols);
 
-    const cells = new Array(colsCount).fill('').map((el) => {
-        return createCell(el)
+    const cells = new Array(colsCount).fill('').map((el, index) => {
+        return createCell(el, index)
     }).join('');
     //console.log(colsCell);
 
