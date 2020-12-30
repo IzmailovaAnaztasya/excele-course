@@ -20,26 +20,35 @@ export class Table extends ExcelComponent {
     // };
 
     onMousedown(event) {
-        if (event.target.dataset.resize) { //уравнение позволяет не учитывать Mousedown там где нет dataset.resize
-            const $target = $(event.target); //переменная в которой оборачиваем объект в DOM утилиту $
-            const $parent = $target.closest('[data-type="targetable"]');
-            const coords = $parent.getCoords();
+            if (event.target.dataset.resize) { //уравнение позволяет не учитывать Mousedown там где нет dataset.resize
+                const $target = $(event.target); //переменная в которой оборачиваем объект в DOM утилиту $
+                const $parent = $target.closest('[data-type="targetable"]');
+                const coords = $parent.getCoords();
 
-            //console.log($parent.getCoords());
-            //console.log($parent.data);
+                const type = $target.data.resize; //получаем значение атрибута по которому будем проводить проверку
+                //console.log(type); //смотрим значение
 
-            document.onmousemove = (e) => { // обращение к документу на событие и назначение этому функции
-                //console.log(e.pageX);
-                console.log('mousemove');
-                const delta = e.pageX - coords.right; //разница между коорд. мышки - коорд положения
-                //console.log(delta);
-                const deltavalue = coords.width + delta;
-                $parent.$el.style.width = deltavalue + 'px';
-                document.querySelectorAll(`[data-col="${$parent.data.col}"]`).forEach((el) => el.style.width = deltavalue + 'px'); //получаем все ячейки таблицы и работаем
-            };
+                //console.log($parent.getCoords());
+                //console.log($parent.data);
+                const cellsdata = this.$root.findAll(`[data-col="${$parent.data.col}"]`);
 
-            document.onmouseup = () => {
-                document.onmousemove = null;
+                document.onmousemove = (e) => { // обращение к документу на событие и назначение этому функции
+                    if (type === 'col') {
+                        const delta = e.pageX - coords.right; //разница между коорд. мышки - коорд положения
+                        //console.log(delta);
+                        const deltavalue = coords.width + delta;
+                        $parent.css({width: deltavalue + 'px'});
+                        cellsdata.forEach((el) => el.style.width = deltavalue + 'px'); //получаем все ячейки таблицы и работаем}
+                    } else {
+                        const delta = e.pageY - coords.bottom;
+                        //console.log(delta);
+                        const deltavalue = coords.height + delta;
+                        $parent.css({height: deltavalue + 'px'});
+                    };
+
+                    document.onmouseup = () => {
+                    document.onmousemove = null;
+                };
             };
         };
     };
