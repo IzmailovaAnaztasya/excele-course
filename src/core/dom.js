@@ -4,11 +4,22 @@ class Dom {
     };
 
     html(html) {
-        if (typeof html === 'string') {
-            this.$el.innerHTML = html;
+        if (typeof html === 'string') { //get
+            this.$el.innerHTML = html; //set
             return this;
         };
         return this.$el.outerHTML.trim();
+    };
+
+    textcont(text) {
+        if (typeof text === 'string') { //get
+            this.$el.textContent = text; //set
+            return this;
+        };
+        if (this.$el.tagName.toLowerCase() === 'input') { //учесть проверку на 'input'
+            return this.$el.value.trim();
+        };
+        return this.$el.textContent.trim();
     };
 
     clear() {
@@ -51,6 +62,10 @@ class Dom {
         return this.$el.getBoundingClientRect();
     };
 
+    find(selector) {
+       return $(this.$el.querySelector(selector)); // $() чтобы получить наш инстанс а не анативный элемент DOM
+    };
+
     findAll(selector) {
         return this.$el.querySelectorAll(selector);
     };
@@ -61,6 +76,32 @@ class Dom {
             //console.log(key);
             //console.log(styles[key]);
         });
+    };
+
+    id(parse) {
+        if (parse) {
+            const parsed = this.id().split(':'); //возфращаем из объекта парсера в строку
+            return {
+                row: +parsed[0], //парсим по строке 0, + для приведения к числу
+                col: +parsed[1], //парсим по колонке 1
+            };
+        };
+        return this.data.id;
+    };
+
+    focus() {
+        this.$el.focus();
+        return this;
+    };
+
+    addClass(className) {
+        this.$el.classList.add(className);
+        return this;
+    };
+
+    removeClass(className) {
+        this.$el.classList.remove(className);
+        return this;
     };
 };
 

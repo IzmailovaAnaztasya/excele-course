@@ -3,10 +3,11 @@ import {ExcelComponent} from '@core/ExcelComponent.js';
 export class Toolbar extends ExcelComponent {
     static className = 'excel__toolbar';
 
-    constructor($root) {
+    constructor($root, options) {
         super($root, {
             name: 'Toolbar', //имя данного компанента, чтобы по нему можно было его определять в коде
             listeners: ['click'], //массив со всеми слушателями которые хотим добавить в этот компанент
+            ...options,
         });
     };
 
