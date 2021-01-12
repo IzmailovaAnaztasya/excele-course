@@ -3,12 +3,11 @@ const CharCODES = {
     Z: 90,
 };
 
-function createCell(_, index) {
+function createCell(i, index) {
     //console.log(index);
     return `
-        <div class="cell" contenteditable="" data-col="${index}">
+        <div class="cell" contenteditable="" data-col="${index}" data-type="cell" data-id="${i}:${index}"></div>
         <div class="cell-resize" data-resize="cell"></div>
-        </div>
     `
 };
 
@@ -49,14 +48,13 @@ export function createTable(rowsCount = 15) {
 
     //console.log(cols);
 
-    const cells = new Array(colsCount).fill('').map((el, index) => {
-        return createCell(el, index)
-    }).join('');
-    //console.log(colsCell);
-
     rows.push(createRow(null, cols)); //формируем первую строку с шапкой таблицы A-Z
 
     for (let i = 0; i < rowsCount; i++) { //с пом-ю цикла созд макет остальных строк
+        const cells = new Array(colsCount).fill('').map((_, index) => {
+            return createCell(i, index)
+            }).join('');
+            //console.log(colsCell);
         rows.push(createRow(i + 1, cells));
     };
 

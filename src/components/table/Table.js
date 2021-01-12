@@ -1,13 +1,18 @@
 import {ExcelComponent} from '@core/ExcelComponent.js';
+import { $ } from '../../core/dom';
 import { createTable } from './table.template';
-import {$} from '@core/dom.js';
+import { TableSelection } from './TableSelection';
+import { resizeHandler } from './table.resize';
+import { isCell, shouldResize, range, nextSelector } from './table.function';
 
 export class Table extends ExcelComponent {
     static className = 'excel__table';
 
-    constructor($root) {
+    constructor($root, options) {
         super($root, {
-            listeners: ['mousedown'],
+            name: 'Table',
+            listeners: ['mousedown', 'keydown', 'input'],
+            ...options,
         })
     };
 
@@ -15,41 +20,74 @@ export class Table extends ExcelComponent {
         return createTable(20);
     };
 
-    // onClick() {
-    //     console.log('click');
-    // };
+    prepare() {
+        this.selection = new TableSelection();
+    };
+
+    init() {
+        super.init();//чтобы добавились элементы DOM
+
+        const $cellSelect = this.$root.find('[data-id="0:0"]'); //переменная для выбран ячейки
+        this.selection.select($cellSelect);
+
+        this.$on('formula:text', (text) => {
+            this.selection.current.textcont(text);
+        });
+
+        this.$on('formula:done', () => {
+            this.selection.current.focus();
+        });
+    };
 
     onMousedown(event) {
-            if (event.target.dataset.resize) { //уравнение позволяет не учитывать Mousedown там где нет dataset.resize
-                const $target = $(event.target); //переменная в которой оборачиваем объект в DOM утилиту $
-                const $parent = $target.closest('[data-type="targetable"]');
-                const coords = $parent.getCoords();
+            if (shouldResize(event)) { //уравнение позволяет не учитывать Mousedown там где нет dataset.resize
+                resizeHandler(this.$root, event);
+        } else if (isCell(event)) {
+            const $target = $(event.target);
+            if (event.shiftKey) {
+                const target = $target.id(true);
+                const current = this.selection.current.id(true);
 
-                const type = $target.data.resize; //получаем значение атрибута по которому будем проводить проверку
-                //console.log(type); //смотрим значение
+                const colsRange = range(current.col, target.col); // console.log('cols', colsRange);
+                const rowsRange = range(current.row, target.row); // console.log('rows', rowsRange);
 
-                //console.log($parent.getCoords());
-                //console.log($parent.data);
-                const cellsdata = this.$root.findAll(`[data-col="${$parent.data.col}"]`);
+                const ids = colsRange.reduce((acc, col) => {
+                    rowsRange.forEach((row) => acc.push(`${row}:${col}`));
+                    return acc;
+                }, []);
+                //console.log(ids);
 
-                document.onmousemove = (e) => { // обращение к документу на событие и назначение этому функции
-                    if (type === 'col') {
-                        const delta = e.pageX - coords.right; //разница между коорд. мышки - коорд положения
-                        //console.log(delta);
-                        const deltavalue = coords.width + delta;
-                        $parent.css({width: deltavalue + 'px'});
-                        cellsdata.forEach((el) => el.style.width = deltavalue + 'px'); //получаем все ячейки таблицы и работаем}
-                    } else {
-                        const delta = e.pageY - coords.bottom;
-                        //console.log(delta);
-                        const deltavalue = coords.height + delta;
-                        $parent.css({height: deltavalue + 'px'});
-                    };
-
-                    document.onmouseup = () => {
-                    document.onmousemove = null;
-                };
+                const $cells = ids.map((id) => this.$root.find(`[data-id="${id}"]`));
+                this.selection.selectGroup($cells);
+            } else {
+                this.selection.select($target);
             };
         };
+        //console.log(event.target);
+    };
+
+    onKeydown(event) {
+        const keys = [
+            'Enter',
+            'Tab',
+            'ArrowLeft',
+            'ArrowRight',
+            'ArrowDown',
+            'ArrowUp',
+        ];
+
+        const {key} = event; //снова диструктизация чтобы не писать (event.key) каждый раз
+        if (keys.includes(key) && !event.shiftKey) {
+            //console.log(key);
+            event.preventDefault();
+            const {col, row} = this.selection.current.id(true); //старая ячейка
+            const $next = this.$root.find(nextSelector(key, {col, row})); //новая ячейка
+            this.selection.select($next);
+            this.$emit('table:select', $next); //учитываем событие перехода но новую ячейку для Formula
+        };
+    };
+
+    onInput(event) {
+        this.$emit('table:text', $(event.target));
     };
 };
