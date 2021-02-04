@@ -1,45 +1,47 @@
-import {ExcelComponent} from '@core/ExcelComponent.js';
+import {ExcelStateComponent} from '@core/ExcelStateComponent.js';
+import { createToolbar } from './toolbar.template';
+import { $ } from '../../core/dom';
+import { defaultStyles } from '@/constants';
 
-export class Toolbar extends ExcelComponent {
+export class Toolbar extends ExcelStateComponent {
     static className = 'excel__toolbar';
 
     constructor($root, options) {
         super($root, {
             name: 'Toolbar', //имя данного компанента, чтобы по нему можно было его определять в коде
             listeners: ['click'], //массив со всеми слушателями которые хотим добавить в этот компанент
+            subscribe: ['currentStyles'],
             ...options,
         });
     };
 
+    prepare() { //наше сост-е
+        this.initState(defaultStyles);
+    };
+
+    get template() {
+        return createToolbar(this.state);
+    };
+
     toHTML() {
-        return `
-        <div class="button">
-                    <span class="material-icons">format_align_left</span>
-                </div>
+        return this.template;
+    };
 
-                <div class="button">
-                    <span class="material-icons">format_align_center</span>
-                </div>
+    storeChanged(changes) {
+        this.setState(changes.currentStyles);
+    };
 
-                <div class="button">
-                    <span class="material-icons">format_align_right</span>
-                </div>
+    onClick(event) {
+        const $target = $(event.target);
+        if ($target.data.type === 'typebutton') {
+            //console.log($target.data.value);
+            const value = JSON.parse($target.data.value);//получ объект с ключами для сравнения с initialState
+            this.$emit('toolbar:applyStyle', value);
 
-                <div class="button">
-                    <span class="material-icons">format_bold</span>
-                </div>
-
-                <div class="button">
-                    <span class="material-icons">format_italic</span>
-                </div>
-
-                <div class="button">
-                    <span class="material-icons">format_underlined</span>
-                </div>
-        `
-    }
-
-    onClick() {
-        console.log('onClickToolbar');
+            // const key = Object.keys(value) [0];
+            // //console.log(key);
+            // this.setState({[key]: value[key]});//чтобы только значения
+            // //console.log(this.state);
+        };
     };
 };

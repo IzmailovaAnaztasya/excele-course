@@ -14,7 +14,8 @@
         "object-curly-spacing":"off",
         "max-len":"off",
         "semi":"off",
-        "no-extra-semi":"off"
+        "no-extra-semi":"off",
+        "no-case-declarations": "off"
     },
     "extends": ["eslint:recommended", "google"]
 }
