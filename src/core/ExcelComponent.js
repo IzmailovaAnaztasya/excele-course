@@ -5,7 +5,10 @@ export class ExcelComponent extends DOMListener {
         super($root, options.listeners);
         this.name = options.name || '';
         this.emitter = options.emitter;
+        this.store = options.store;
+        this.subscribe = options.subscribe || [];//храним массив строк
         this.unsubscribers = [];
+        //this.storeSub = null;
 
         //console.log(options);//объект emitter и listeners
 
@@ -33,6 +36,23 @@ export class ExcelComponent extends DOMListener {
         this.unsubscribers.push(unsub);
     };
 
+    $dispatch(action) {
+        this.store.dispatch(action);
+    };
+
+    // $subscribe(fn) {
+    //     this.storeSub = this.store.subscribe(fn);
+    // };
+
+    //Сюда приходят изм-я только по полям на которые подписались
+    storeChanged() {
+
+    };
+
+    isWatching(key) {
+        return this.subscribe.includes(key);
+    };
+
     //инициализируем компонент
     //добавляем слушателей
     init() {
@@ -44,5 +64,6 @@ export class ExcelComponent extends DOMListener {
     destroy() {
         this.removeDOMListeners();
         this.unsubscribers.forEach((unsub) => unsub());
+        //this.storeSub.subscribe();
     };
 };

@@ -12,7 +12,7 @@ class Dom {
     };
 
     textcont(text) {
-        if (typeof text === 'string') { //get
+        if (typeof text !== 'undefined') { //get
             this.$el.textContent = text; //set
             return this;
         };
@@ -78,6 +78,13 @@ class Dom {
         });
     };
 
+    getStyles(styles = []) {
+        return styles.reduce((res, s) => { //приводит к другому значению, начальное знач - результирующий объект и стиль
+            res[s] = this.$el.style[s];
+            return res;
+        }, {}); //объект и объект
+    };
+
     id(parse) {
         if (parse) {
             const parsed = this.id().split(':'); //возфращаем из объекта парсера в строку
@@ -92,6 +99,14 @@ class Dom {
     focus() {
         this.$el.focus();
         return this;
+    };
+
+    attr(name, value) { //для упрощения взаимодей-я с атрибутами
+        if (value) {
+            this.$el.setAttribute(name, value); //если передаем value то записываем и то и то
+            return this;
+        };
+        return this.$el.gerAttribute(name); //либо записывю только name
     };
 
     addClass(className) {
