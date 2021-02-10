@@ -45,3 +45,8 @@ export function debounce(fn, wait) { //принимает функцию и ко
         timeout = setTimeout(later, wait);
     }; //возвращ. новую функцию модификатор аргументов
 };
+
+//для клонирования defaulState
+export function clone(obj) {
+    return JSON.parse(JSON.stringify(obj));
+};
