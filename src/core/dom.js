@@ -22,7 +22,7 @@ class Dom {
         return this.$el.textContent.trim();
     };
 
-    clear() {
+    clear() { //ничего не принимает
         this.html('');
         return this;
     };
